@@ -1,5 +1,6 @@
 import cv2
 import mediapipe as mp
+import json
 
 # the test is for mediapipe vid face detection study.
 # # detection and tracking using mediapipe face mesh
@@ -24,6 +25,11 @@ face_mesh = mp_face_mesh.FaceMesh(
     min_tracking_confidence=0.5
 )
 
+# result for all landmarks
+landmarks_per_frame = {}
+# frame counter
+frame_counter = 0
+
 # check if the video is opened successfully
 if not capture.isOpened():
     print("Error: Could not open video.")
@@ -41,6 +47,16 @@ else:
         # to boost performance, mark the image as not writeable
         image.flags.writeable = False
         results = face_mesh.process(image)
+
+        # add the landmarks to the list
+        if results.multi_face_landmarks:
+            landmarks_for_this_frame = [
+                {'x': lm.x, 'y': lm.y, 'z': lm.z}
+                for lm in results.multi_face_landmarks[0].landmark
+            ]
+            landmarks_per_frame[frame_counter] = landmarks_for_this_frame
+        frame_counter += 1
+
         # mark the image as writeable again
         image.flags.writeable = True
 
@@ -61,7 +77,9 @@ else:
             if cv2.waitKey(5) & 0xFF == ord('q'):
                 break
 
+    with open('landmarks_per_frame.txt', 'w') as f:
+        f.write(json.dumps(landmarks_per_frame, indent=4))
+
     # cleanup
     face_mesh.close()
     cv2.destroyAllWindows()
-
