@@ -3,8 +3,8 @@ import mediapipe as mp
 import json
 
 # the test is for mediapipe vid face detection study.
-# # detection and tracking using mediapipe face mesh
-# # import drawing_utils for drawing landmarks
+# detection and tracking using mediapipe face mesh
+# import drawing_utils for drawing landmarks
 mp_face_mesh = mp.solutions.face_mesh
 mp_drawing = mp.solutions.drawing_utils
 
